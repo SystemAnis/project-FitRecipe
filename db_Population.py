@@ -19,7 +19,7 @@ def inizializza_dati_base():
         ]
         db.session.bulk_save_objects(alimenti_base) # Aggiunge gli ingredienti al database
         db.session.commit() # Salva le modifiche nel database
-        print("Ingredienti inseriti.")
+        print("Database initialized with ingredients!")
 
     # Se la lista è vuota, aggiunge i seguenti ingredienti:
     if NutritionPlan.query.count() == 0:
@@ -29,9 +29,9 @@ def inizializza_dati_base():
 
         if whey and avena and yogurt:
             scheda_high_protein = NutritionPlan(nome="Colazione Ricomposizione", tipo="High-Protein", is_preset=True)
-            scheda_high_protein.ingredienti.append(PlanIngredient(ingredient=whey, quantita_g=40))
-            scheda_high_protein.ingredienti.append(PlanIngredient(ingredient=avena, quantita_g=60))
-            scheda_high_protein.ingredienti.append(PlanIngredient(ingredient=yogurt, quantita_g=150))
+            scheda_high_protein.ingredienti.append(PlanIngredient(ingredient=whey, quantitaGrammi=40))
+            scheda_high_protein.ingredienti.append(PlanIngredient(ingredient=avena, quantitaGrammi=60))
+            scheda_high_protein.ingredienti.append(PlanIngredient(ingredient=yogurt, quantitaGrammi=150))
 
             db.session.add(scheda_high_protein) # Aggiunge gli ingredienti al database
             db.session.commit() # Salva le modifiche nel database

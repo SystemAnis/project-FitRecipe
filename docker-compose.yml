@@ -14,6 +14,13 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    # Il container è "healthy" solo quando PostgreSQL accetta davvero connessioni
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d fit_recipes"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
 
   # API Flask
   api:
@@ -25,7 +32,8 @@ services:
       - DATABASE_URL=postgresql+psycopg2://admin:password123@db:5432/fit_recipes
       - FLASK_DEBUG=true
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - .:/app
 

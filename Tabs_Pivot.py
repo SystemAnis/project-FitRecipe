@@ -1,28 +1,40 @@
 from database import db
 from Ingredients import Ingredient
 
-# classe che relazione tabelle e ingredienti per i piani nutrizionali in postgreSQL
+# Tabella Pivot: Collega la Scheda all'Ingrediente e salva i grammi
 class PlanIngredient(db.Model):
     __tablename__ = 'planIngredients'
     
-    plan_id = db.Column(db.Integer, db.ForeignKey('nutritionPlans.id'), nullable=False)
-    ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredients.id'), nullable=False)
+    # Chiavi esterne (Foreign Keys) che puntano alle due tabelle principali.
+    # Insieme formano la chiave primaria composta della tabella pivot.
+    plan_id = db.Column(db.Integer, db.ForeignKey('nutritionPlans.id'), primary_key=True)
+    ingredient_id = db.Column(db.Integer, db.ForeignKey('ingredients.id'), primary_key=True)
     
+    # quantità in grammi per questo specifico alimento nella scheda
     quantitaGrammi = db.Column(db.Float, nullable=False)
+    
+    # Relazione per accedere comodamente ai dati dell'ingrediente
     ingredient = db.relationship(Ingredient)
     
 
-# classe per il piano nutrizionale in PostgreSQL
+# Modello della Scheda Nutrizionale
 class NutritionPlan(db.Model):
     __tablename__ = 'nutritionPlans'
     
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
-    tipo = db.Column(db.String(50), nullable=False)  # Esempio: "High-Protein", "Low-Carb", ecc.
+    tipo = db.Column(db.String(50), nullable=False)  # Es. "High-Protein", "Ipocalorica Standard"
     is_preset = db.Column(db.Boolean, default=False)  # Indica se la scheda è preset o personalizzata
     
-    ingredienti = db.relationship('PlanIngredient', backref='nutritionPlan', lazy=True)
+    # Relazione verso la tabella pivot (se elimino la scheda, elimino i collegamenti)
+    ingredienti = db.relationship(
+        'PlanIngredient',
+        backref='nutritionPlan',
+        lazy=True,
+        cascade='all, delete-orphan'  # eliminando la scheda, elimina anche i suoi collegamenti
+    )
 
+    # calcola automaticamente i macro totali della scheda
     def to_dict(self):
         totale_proteine = 0
         totale_carboidrati = 0
@@ -30,14 +42,15 @@ class NutritionPlan(db.Model):
         totale_calorie = 0
         lista_alimenti = []
         
-        for pi in self.ingredienti: 
+        for pi in self.ingredienti:
             ing = pi.ingredient
             q = pi.quantitaGrammi
             
-            proteine_calc = ing.proteine * q / 100
-            carbo_calc = ing.carboidrati * q / 100
-            grassi_calc = ing.grassi * q / 100
-            calorie_calc = ing.calorie * q / 100
+            # Proporzione: (macro per 100g / 100) * grammi effettivi
+            proteine_calc = (ing.protein / 100) * q
+            carbo_calc = (ing.carbs / 100) * q
+            grassi_calc = (ing.fats / 100) * q
+            calorie_calc = (ing.calories / 100) * q 
 
             totale_proteine += proteine_calc
             totale_carboidrati += carbo_calc

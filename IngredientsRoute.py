@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from modelli_ingredienti import Ingredient
+from Ingredients import Ingredient
 
 # Creiamo il Blueprint per gli ingredienti
 api_ingredienti = Blueprint('api_ingredienti', __name__)
