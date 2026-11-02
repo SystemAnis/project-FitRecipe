@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 5000
 
 # Comando di avvio per eseguire l'applicazione Flask accessibile dall'esterno
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+CMD ["flask", "--app", "main", "run", "--host=0.0.0.0", "--port=5000"]
