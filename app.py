@@ -44,7 +44,7 @@ with app.app_context():
     db.create_all()  # Crea le tabelle nel database se non esistono già
     
     # Se la lista è vuota, aggiunge i seguenti ingredienti:
-    if Ingredient.query.query.count() == 0: # lista vuota
+    if Ingredient.query.count() == 0: # lista vuota
         ingredients = [
             Ingredient(name="Avena Istantanea", protein=11.0, carbs=61.0, fats=7.7, calories=388),
             Ingredient(name="Proteine del Siero del Latte (Whey)", protein=82.0, carbs=4.0, fats=7.5, calories=412),
