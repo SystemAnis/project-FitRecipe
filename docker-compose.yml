@@ -1,4 +1,8 @@
+# DOcker Compose che contiene una config multicontainer, una per PostgreSQL e 
+# una per l'API Flask
+
 services:
+  # Database PostreSQL
   db:
     image: postgres:15-alpine
     container_name: fit-postgres
@@ -11,6 +15,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  # API Flask
   api:
     build: .
     container_name: fit-api
@@ -24,6 +29,6 @@ services:
     volumes:
       - .:/app
 
-
+# Definizione del "volume denominato" per la persistenza dei dati 
 volumes:
   postgres_data:
